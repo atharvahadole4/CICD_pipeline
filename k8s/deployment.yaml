@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: registry.gitlab.com/your-group/your-project:latest
+          image: cicd-demo:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
