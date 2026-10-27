@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Deploy to Kubernetes') {
+            steps {
+                checkout scm
+                bat '''
+                    set PATH=%PATH%;C:\\Users\\Microsoft\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin
+                    kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config apply -f k8s/deployment.yaml
+                    kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config apply -f k8s/service.yaml
+                    kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config rollout restart deployment/gitlab-cicd-demo
+                    kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config rollout status deployment/gitlab-cicd-demo --timeout=60s
+                '''
+            }
+        }
+    }
+}
