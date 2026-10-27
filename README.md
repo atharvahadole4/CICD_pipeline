@@ -23,3 +23,39 @@ mvn spring-boot:run
 Unsupported pipeline actions return HTTP 400.
 
 The `.gitlab-ci.yml` pipeline runs the tests and packages the executable JAR.
+
+## Run with Docker Compose
+
+Build the image and start the API from the project directory:
+
+```powershell
+docker compose up --build
+```
+
+The API is available at `http://localhost:8080`. Stop it with:
+
+```powershell
+docker compose down
+```
+
+The multi-stage `Dockerfile` builds the Spring Boot JAR and runs it as a
+non-root user. GitLab CI builds and pushes an image tagged with the commit SHA
+to the project's Container Registry; commits on the default branch are also
+tagged `latest`. The GitLab Runner must support Docker-in-Docker and be
+configured for privileged service containers.
+
+## Deploy to Kubernetes
+
+Update the image in `k8s/deployment.yaml` to the image path in your GitLab
+Container Registry, then apply both manifests:
+
+```powershell
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+```
+
+The Service is internal to the cluster (`ClusterIP`). For local access, run:
+
+```powershell
+kubectl port-forward service/gitlab-cicd-demo 8080:80
+```

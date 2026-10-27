@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-cicd-demo
+  labels:
+    app: gitlab-cicd-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: gitlab-cicd-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

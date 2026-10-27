@@ -1,0 +1,10 @@
+.git
+.gitignore
+.github
+.gitlab-ci.yml
+.dockerignore
+Dockerfile
+compose.yaml
+k8s
+target
+gitlab-runner-windows-amd64.exe
