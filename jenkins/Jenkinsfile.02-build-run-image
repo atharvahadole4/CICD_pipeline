@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and Run Container') {
+            steps {
+                bat '''
+                    set PATH=%PATH%;C:\\Users\\Microsoft\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin
+                    docker -H npipe:////./pipe/dockerDesktopLinuxEngine rm -f cicd-demo 2>nul || ver >nul
+                    if not exist target mkdir target
+                    copy /Y "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\01-build-jar\\target\\*.jar" target\\
+                    docker -H npipe:////./pipe/dockerDesktopLinuxEngine build -f Dockerfile.app -t cicd-demo:latest .
+                    docker -H npipe:////./pipe/dockerDesktopLinuxEngine run -d --name cicd-demo -p 8080:8080 cicd-demo:latest
+                '''
+            }
+        }
+
+        stage('Trigger Kubernetes Job') {
+            steps {
+                build job: '03-deploy-kubernetes', wait: false
+            }
+        }
+    }
+}

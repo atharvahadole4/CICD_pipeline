@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and Test JAR') {
+            steps {
+                bat 'mvn --batch-mode --no-transfer-progress clean package -DskipTests'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+
+        stage('Trigger Image Job') {
+            steps {
+                build job: '02-build-run-image', wait: false
+            }
+        }
+    }
+}
