@@ -6,5 +6,6 @@
 Dockerfile
 compose.yaml
 k8s
-target
+target/*
+!target/*.jar
 gitlab-runner-windows-amd64.exe

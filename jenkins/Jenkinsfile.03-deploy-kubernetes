@@ -7,6 +7,14 @@ pipeline {
                 checkout scm
                 bat '''
                     set PATH=%PATH%;C:\\Users\\Microsoft\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin
+
+                    kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config cluster-info --request-timeout=5s
+                    if errorlevel 1 (
+                        echo ERROR: Kubernetes cluster at 127.0.0.1:6443 is not running!
+                        echo Please ensure Kubernetes is enabled in Docker Desktop.
+                        exit /b 1
+                    )
+
                     kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config apply -f k8s/deployment.yaml
                     kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config apply -f k8s/service.yaml
                     kubectl --kubeconfig C:\\Users\\Microsoft\\.kube\\config rollout restart deployment/gitlab-cicd-demo

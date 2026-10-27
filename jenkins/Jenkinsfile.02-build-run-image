@@ -6,12 +6,26 @@ pipeline {
             steps {
                 bat '''
                     set PATH=%PATH%;C:\\Users\\Microsoft\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin
-                    set DOCKER_HOST=tcp://localhost:2375
+                    set DOCKER_HOST=npipe:////./pipe/dockerDesktopLinuxEngine
+
+                    docker version
+                    if errorlevel 1 (
+                        echo Docker not responding on named pipe, trying TCP fallback...
+                        set DOCKER_HOST=tcp://localhost:2375
+                        docker version
+                        if errorlevel 1 exit /b 1
+                    )
+
                     docker rm -f cicd-demo 2>nul || ver >nul
                     if not exist target mkdir target
                     copy /Y "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\01-build-jar\\target\\*.jar" target\\
+                    if errorlevel 1 exit /b 1
+
                     docker build -f Dockerfile.app -t cicd-demo:latest .
+                    if errorlevel 1 exit /b 1
+
                     docker run -d --name cicd-demo -p 8080:8080 cicd-demo:latest
+                    if errorlevel 1 exit /b 1
                 '''
             }
         }
